@@ -1,0 +1,48 @@
+﻿@using GroupManager.Models
+@using GroupManager.Functions
+@{
+    Layout = "~/Views/Shared/_Header.cshtml";
+    var List = (List<Group>)ViewBag.List;
+    var dal = new User_Function();
+}
+
+
+<div class="right">
+    <h3 class="heading">Tìm kiếm nhóm</h3>
+    <div class="group_list">
+        <div class="search">
+            <form action="" method="get">
+                <input type="text" placeholder="Tên nhóm" name="s" required>
+                <button type="submit">Tìm kiếm</button>
+            </form>
+        </div>
+        <h4 class="left-heading">Tìm thấy @List.Count kết quả cho từ khóa "@ViewBag.SearchString"</h4>
+        <div class="list">
+            @if (List.Count > 0)
+            {
+                foreach (var item in List)
+                {
+                    var name = dal.GetUser((int)item.Created_By).FullName;
+                    <div class="items">
+                        <div class="info">
+                            <span>TÊN NHÓM: <strong>@item.Title</strong></span>
+                            <span>Ngày tạo: <strong>@item.Created_Date.Value.ToString("dd/MM/yyyy")</strong></span>
+                            <span>Người tạo: <a href="#">@name</a> </span>
+                        </div>
+                        <div class="_options">
+                            @if ( dal.IsInGroup((int)Session["user_id"],item.ID) ){
+                                <button class="btn"><a href="#">Truy cập</a></button>
+                            }else
+                            {
+                                <button class="btn"><a href="#">Tham gia</a></button>
+                            }
+                            
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+

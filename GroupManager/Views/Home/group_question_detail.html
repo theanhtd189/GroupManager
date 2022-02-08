@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="Description" content="Enter your description here"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./style.css">
+<title>Hello</title>
+</head>
+<body>
+<header>
+    <div class="logo" style="background-image: url(./logo.jpg);">
+    </div>
+    <div class="flex">
+        <div class="options">
+            <button class="btn addnew"><a href="#">Add new</a></button>
+        </div>
+        <div class="user">
+            <div class="avt" style="background-image: url(./avt.png);">
+                <div class="tooltip">
+                    <a href="#">Đăng Xuất</a>
+                </div>
+            </div>
+            <a class="username" href="#a">Thế Anh</a>
+        </div>
+    </div>
+    
+</header>
+<main>
+    <div class="left">
+        <ul class="list_items">
+            <li class="sgl_item"><a href="#">HOME</a></li>
+            <li class="sgl_item active"><a href="#">GROUP</a></li>
+            <li class="sgl_item"><a href="#">BAC</a></li>
+        </ul>
+    </div>
+    <div class="right">
+        <h3 class="heading">tên nhóm</h3>
+        <div class="group_list">
+            <div class="nav_bar">
+                         <ul>
+                             <li><a href="#">Bài giảng</a></li>
+                             <li><a href="#">Post</a></li>
+                             <li class="active"><a href="#">Question</a></li>
+                             <li><a href="#">Quiz</a></li>
+                         </ul>
+            </div>
+            <div class="menu">
+                <div class="search">
+                    <form action="">
+                        <input type="text" placeholder="Tên muốn tìm kiếm">
+                        <button type="submit">Tìm kiếm</button>
+                    </form>           
+                </div>
+                <ul>
+                    <a href="#" class="btn">Sửa nhóm</a>
+                    <a href="#" class="btn">Xóa nhóm</a>
+                    <a href="#" class="btn">Rời nhóm</a>
+                    <a href="group_member_detail.html" class="btn">Xem thành viên</a>
+                </ul>
+             </div>
+        </div>
+        <div class="question_list">
+            <h4 class="left-heading">Các câu hỏi</h4>
+            <div class="list">
+                <div class="items sgl_post">
+                    <p>Người đăng: <span>abc</span></p>
+                    <p>Vào lúc: <span>abc</span></p>
+                    <p>Tiêu đề: <span>abc</span></p>
+                    <p>Nội dung: 
+                        <span class="_content">Contrary to popular 
+                            belief, Lorem Ipsum is not simply random t
+                            ext. It has roots in a piece of classical 
+                            Latin literature from 45 BC, making it ove
+                        </span>
+                            <div class="_options">
+                                <button class="btn"><a href="question_detail.html">XEm câu trả lời</a></button>
+                                <button class="btn"><a href="#">Xóa</a></button>
+                            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer>
+
+</footer>
+</body>
+</html>

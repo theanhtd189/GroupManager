@@ -1,0 +1,391 @@
+﻿@using GroupManager.Models
+@using GroupManager.Functions
+@{
+    var g = (Group)ViewBag.Group;
+    var dal = new Group_Function();
+    var dal_user = new User_Function();
+    var gid = (int)ViewBag.CurrentID;
+    var uid = (int)Session["user_id"];
+    var type_ = ViewBag.Type;
+    bool IsAdminGroup = dal_user.IsAdminGroup((int)Session["user_id"], gid);
+    bool IsAdmin = dal_user.IsAdmin((int)Session["user_id"]);
+    bool search = false;
+    List<Post> list_search = null;
+    if (ViewBag.list_search != null)
+    {
+        list_search = (List < Post >)ViewBag.list_search;
+        search = true;
+    }
+    Layout = "~/Views/Shared/_Header.cshtml";
+
+}
+
+
+<div class="right">
+    <h3 class="heading">@g.Title</h3>
+    <div class="group_list">
+        <div class="nav_bar">
+            <ul>
+                <li @if (type_ == "detail") { <text> class="active" </text> }><a href="@Url.Action("GroupDetail", "Home", new { id=gid, @type = "detail" })"><i class="fas fa-info-circle"></i> Thông tin nhóm</a></li>
+                <li @if (type_ == "lesson") { <text> class="active" </text> }><a href="@Url.Action("GroupDetail", "Home", new { id=gid,@type = "lesson" })"><i class="fas fa-file-alt"></i> Bài giảng</a></li>
+                <li @if (type_ == "post") { <text> class="active" </text> }><a href="@Url.Action("GroupDetail", "Home", new { id=gid,@type = "post" })"><i class="fas fa-sticky-note"></i> Post</a></li>
+                <li @if (type_ == "question") { <text> class="active" </text> }><a href="@Url.Action("GroupDetail", "Home", new { id=gid,@type = "question" })"><i class="fas fa-question-circle"></i> Question</a></li>
+                <li @if (type_ == "quiz") { <text> class="active" </text> }><a href="@Url.Action("GroupDetail", "Home", new { id=gid,@type = "quiz" })"><i class="fas fa-feather-alt"></i> Quiz</a></li>
+            </ul>
+        </div>
+        <div class="menu">
+            <div class="search">
+                @if (type_ == "post")
+                {
+                    <form action="">
+                        <input type="text" placeholder="Tên bài viết" name="s">
+                        <button type="submit">Tìm kiếm</button>
+                    </form>
+
+                }
+            </div>
+            <ul>
+                @if (IsAdminGroup || IsAdmin)
+                {
+                    <a href="@Url.Action("Edit","Group", new { gid = gid})" class="btn">Sửa nhóm</a>
+                    <a href="@Url.Action("GroupDetail","Home",new { id=gid, act="del" })" class="btn" onclick="return confirm('Bạn có xác nhận muốn xóa?')">Xóa nhóm</a>
+                    <a href="@Url.Action("GroupMember", "Home", new { id=gid })" class="btn">Xem thành viên</a>
+                }
+                else
+                {
+                    <a href="@Url.Action("GroupDetail","Home",new {  id=gid, act="out" } )" class="btn" onclick="return confirm('Bạn có xác nhận muốn rời nhóm?')">Rời nhóm</a>
+                }
+
+            </ul>
+        </div>
+    </div>
+
+    <div class="post_list">
+
+        @if (type_ == "detail")
+        {
+        <div class="question_list">
+            <p class="sgl_p notice">* THÔNG TIN VỀ NHÓM</p>
+            <h4 class="left-heading"><i class="fas fa-hashtag"></i> Tên nhóm: <strong>@g.Title</strong></h4>
+            <h4 class="left-heading"><i class="fas fa-hashtag"></i> Người tạo: @dal_user.GetUser((int)g.Created_By).FullName</h4>
+            <h4 class="left-heading"><i class="fas fa-hashtag"></i> Ngày tạo: @g.Created_Date.Value.ToString("dd/MM/yyyy")</h4>
+            <h4 class="left-heading"><i class="fas fa-hashtag"></i> Danh mục: @dal.GetCategory((int)g.Category_ID).Title</h4>
+            <h4 class="left-heading"><i class="fas fa-hashtag"></i> Số lượng thành viên: @dal.CountMember(g.ID)</h4>
+        </div>
+        }
+
+        @if (type_ == "post")
+        {
+            if (search)
+            {
+                <h4 class="left-heading">Tìm thấy @list_search.Count kết quả cho từ khóa "@ViewBag.SearchString"</h4>
+                <div class="list">
+                    @if (list_search.Count > 0)
+                    {
+                        foreach (var item in list_search)
+                        {
+                            var name = new User_Function().GetUser((int)item.Created_By).FullName;
+                            <div class="items">
+                                <div class="info">
+                                    <span>Tiêu đề: <strong>@item.Title</strong></span>
+                                    <span>Ngày tạo: <strong>@item.Created_Date.Value.ToString("dd/MM/yyyy")</strong></span>
+                                    <span>Người tạo: <a href="#">@name</a> </span>
+                                </div>
+                                <div class="_options">
+                                    <button class="btn"><a href="@Url.Action("Post","Home", new { id=item.ID })">Xem BÀI VIẾT</a></button>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="create_"><i class="fas fa-plus-circle"></i><a href="@Url.Action("Create","Post", new { gid=gid})"> Tạo bài viết mới</a></p>
+                <h4 class="left-heading">Các bài viết của bạn</h4>
+                <div class="list">
+
+                    @if (dal_user.ListPost(uid, gid) != null)
+                    {
+                        if (dal_user.ListPost(uid, gid).Count > 0)
+                        {
+                            foreach (var item in (List<Post>)dal_user.ListPost(uid, gid))
+                            {
+                                <div class="items sgl_post">
+                                    <span class="title">@item.Title</span>
+                                    <p>Người đăng: <span>@dal_user.GetUser((int)item.Created_By).FullName</span></p>
+                                    <p>Vào lúc: <span>@item.Created_Date.Value.ToString("dd/MM/yyyy")</span></p>
+                                    <p>
+                                        Nội dung:
+                                        <span class="proc_content">
+                                            @Html.Raw(Server.HtmlDecode(item.Content))
+                                        </span>
+                                    </p>
+                                    <div class="_options">
+                                        <button class="btn"><a href="@Url.Action("Post","Home", new { id=item.ID })">Xem BÀI VIẾT</a></button>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="sgl_p">⭕ Chưa có bài viết nào</p>
+                        }
+                    }
+                    <h4 class="left-heading">Các bài viết khác</h4>
+                    <div class="list">
+                        @if (dal.ListPost((int)gid) != null)
+                        {
+                            if (dal.ListPost((int)gid).Count > 0)
+                            {
+                                foreach (var item in (List<Post>)dal.ListPost((int)gid))
+                                {
+                                    <div class="items sgl_post">
+                                        <span class="title">@item.Title</span>
+                                        <p>Người đăng: <span>@dal_user.GetUser((int)item.Created_By).FullName</span></p>
+                                        <p>Vào lúc: <span>@item.Created_Date.Value.ToString("dd/MM/yyyy")</span></p>
+                                        <p>
+                                            Nội dung:
+                                            <span class="proc_content">
+                                                @Html.Raw(Server.HtmlDecode(item.Content))
+                                            </span>
+                                        </p>
+                                        <div class="_options">
+                                            <button class="btn"><a href="@Url.Action("Post","Home", new { id=item.ID })">XEm BÀI VIẾT</a></button>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <p class="sgl_p">⭕ Chưa có bài viết nào</p>
+                            }
+                        }
+                    </div>
+                </div>
+            }
+
+        }
+
+
+        @if (type_ == "question")
+        {
+            <div class="question_list">
+                <p class="create_"><i class="fas fa-plus-circle"></i><a href="@Url.Action("Create","Question", new { gid=gid})"> Tạo câu hỏi mới</a></p>
+                <h4 class="left-heading">Các câu hỏi của bạn</h4>
+                <div class="list">
+                    @if (dal_user.ListQuestion(uid, gid) != null)
+                    {
+                        if (dal_user.ListQuestion(uid, gid).Count > 0)
+                        {
+                            foreach (var item in (List<Question>)dal_user.ListQuestion(uid, gid))
+                            {
+                                <div class="items sgl_post">
+                                    <span class="title">@item.Title</span>
+                                    <p>Người đăng: <span>@dal_user.GetUser((int)item.Created_By).FullName</span></p>
+                                    <p>Vào lúc: <span>@item.Created_Date.Value.ToString("dd/MM/yyyy")</span></p>
+                                    <p>
+                                        Nội dung:
+                                        <span class="proc_content">
+                                            @Html.Raw(Server.HtmlDecode(item.Content))
+                                        </span>
+                                    </p>
+                                    <div class="_options">
+                                        <button class="btn"><a href="@Url.Action("Question", new { id=item.ID})">Xem câu trả lời</a></button>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="sgl_p">⭕ Chưa có câu hỏi nào</p>
+                        }
+                    }
+                </div>
+                <h4 class="left-heading">Các câu hỏi khác</h4>
+                <div class="list">
+                    @if (dal.ListQuestion((int)gid) != null)
+                    {
+                        if (dal.ListQuestion(gid).Count > 0)
+                        {
+                            foreach (var item in (List<Question>)dal.ListQuestion(gid))
+                            {
+                                <div class="items sgl_post">
+                                    <span class="title">@item.Title</span>
+                                    <p>Người đăng: <span>@dal_user.GetUser((int)item.Created_By).FullName</span></p>
+                                    <p>Vào lúc: <span>@item.Created_Date.Value.ToString("dd/MM/yyyy")</span></p>
+                                    <p>
+                                        Nội dung:
+                                        <span class="proc_content">
+                                            @Html.Raw(Server.HtmlDecode(item.Content))
+                                        </span>
+                                        <div class="_options">
+                                            <button class="btn"><a href="@Url.Action("Question", new { id=item.ID})">Xem câu trả lời</a></button>
+                                        </div>
+                                </div>
+                            }
+
+                        }
+                        else
+                        {
+                            <p class="sgl_p">⭕ Chưa có câu hỏi nào</p>
+                        }
+                    }
+
+                </div>
+            </div>
+        }
+
+
+        @if (type_ == "lesson")
+        {
+    <div class="question_list">
+
+        @if (IsAdminGroup || IsAdmin)
+        {
+            <p class="create_"><i class="fas fa-plus-circle"></i><a href="@Url.Action("Create","Lesson", new { gid=gid})"> Thêm bài giảng mới</a></p>
+            <h4 class="left-heading">Các bài giảng của bạn</h4>
+            <div class="list">
+                @if (dal_user.ListLesson(uid, gid) != null)
+                {
+                    if (dal_user.ListLesson(uid, gid).Count > 0)
+                    {
+                        foreach (var item in (List<Lesson>)dal_user.ListLesson(uid, gid))
+                        {
+                            <div class="items sgl_post">
+                                <span class="title">@item.Title</span>
+                                <p>Người đăng: <span>@dal_user.GetUser((int)item.Created_By).FullName</span></p>
+                                <p>Vào lúc: <span>@item.Created_Date.Value.ToString("dd/MM/yyyy")</span></p>
+                                <p>
+                                    Nội dung:
+                                    <span class="proc_content">
+                                        @Html.Raw(Server.HtmlDecode(item.Content))
+                                    </span>
+                                </p>
+                                <div class="_options">
+                                    <button class="btn"><a href="@Url.Action("Lesson", new { id=item.ID})">XEm</a></button>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="sgl_p">⭕ Chưa có bài giảng nào</p>
+                    }
+                }
+            </div>
+        }
+        else
+        {
+            <p class="sgl_p notice">* Chỉ quản trị viên nhóm mới có thể đăng bài giảng</p>
+            <h4 class="left-heading">Các bài giảng</h4>
+            <div class="list">
+                @if (dal.ListLesson((int)gid) != null)
+                {
+                    if (dal.ListLesson(gid).Count > 0)
+                    {
+                        foreach (var item in (List<Lesson>)dal.ListLesson(gid))
+                        {
+                            <div class="items sgl_post">
+                                <span class="title">@item.Title</span>
+                                <p>Người đăng: <span>@dal_user.GetUser((int)item.Created_By).FullName</span></p>
+                                <p>Vào lúc: <span>@item.Created_Date.Value.ToString("dd/MM/yyyy")</span></p>
+                                <p>
+                                    Nội dung:
+                                    <span class="_content">
+                                        @Html.Raw(Server.HtmlDecode(item.Content))
+                                    </span>
+                                    <div class="_options">
+                                        <button class="btn"><a href="@Url.Action("Lesson", new { id=item.ID})">Xem</a></button>
+                                    </div>
+                            </div>
+                        }
+
+                    }
+                    else
+                    {
+                        <p class="sgl_p">⭕ Chưa có bài giảng nào</p>
+                    }
+                }
+
+            </div>
+        }
+
+    </div>
+        }
+
+
+        @if (type_ == "quiz")
+        {
+            <div class="question_list">
+                <p class="create_"><i class="fas fa-plus-circle"></i><a href="@Url.Action("Create","Quiz", new { gid=gid})"> Tạo quiz mới</a></p>
+                <h4 class="left-heading">QUIZ của bạn</h4>
+                <div class="list">
+                    @if (dal_user.ListQuiz(uid, gid) != null)
+                    {
+                        if (dal_user.ListQuiz(uid, gid).Count > 0)
+                        {
+                            foreach (var item in (List<Quiz>)dal_user.ListQuiz(uid, gid))
+                            {
+                                <div class="items sgl_post">
+                                    <span class="title">@item.Title</span>
+                                    <p>Người đăng: <span>@dal_user.GetUser((int)item.Created_By).FullName</span></p>
+                                    <p>Vào lúc: <span>@item.Created_Date.Value.ToString("dd/MM/yyyy")</span></p>
+                                    <p>
+                                        Nội dung:
+                                        <span class="proc_content">
+                                            @Html.Raw(Server.HtmlDecode(item.Content))
+                                        </span>
+                                    </p>
+                                    <div class="_options">
+                                        <button class="btn"><a href="post_detail.html">Xem</a></button>
+                                        <button class="btn"><a href="#">sửa</a></button>
+                                        <button class="btn"><a href="#">Xóa</a></button>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="sgl_p">⭕ Chưa có quiz nào</p>
+                        }
+                    }
+                </div>
+                <h4 class="left-heading">Các QUIZ khác</h4>
+                <div class="list">
+                    @if (dal.ListQuiz((int)gid) != null)
+                    {
+                        if (dal.ListQuiz(gid).Count > 0)
+                        {
+                            foreach (var item in (List<Quiz>)dal.ListQuiz(gid))
+                            {
+                                <div class="items sgl_post">
+                                    <span class="title">@item.Title</span>
+                                    <p>Người đăng: <span>@dal_user.GetUser((int)item.Created_By).FullName</span></p>
+                                    <p>Vào lúc: <span>@item.Created_Date.Value.ToString("dd/MM/yyyy")</span></p>
+                                    <p>
+                                        Nội dung:
+                                        <span class="_content">
+                                            @Html.Raw(Server.HtmlDecode(item.Content))
+                                        </span>
+                                        <div class="_options">
+                                            <button class="btn"><a href="question_detail.html">Xem</a></button>
+                                        </div>
+                                </div>
+                            }
+
+                        }
+                        else
+                        {
+                            <p class="sgl_p">⭕ Chưa có quiz nào</p>
+                        }
+                    }
+
+                </div>
+            </div>
+        }
+
+    </div>
+
+
+

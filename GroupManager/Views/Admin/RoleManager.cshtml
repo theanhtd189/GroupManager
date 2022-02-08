@@ -1,0 +1,81 @@
+﻿@using GroupManager.Models;
+@using GroupManager.Functions;
+@{
+    ViewBag.Title = "Phân quyền";
+    Layout = "~/Views/Shared/_Header.cshtml";
+    var dal = new User_Function();
+    var list_user = dal.ListAll("desc");
+    var list_user_role = dal.ListUserRole("desc");
+}
+<script>
+    $(document).ready(function () {
+        $("select").bind('change', function () {
+            var role_id = $(this).val();
+            var uid = $(this).prop('id');
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SetRole","User")",
+                data: { 'uid': uid, 'rid': role_id },
+                success: function (data) {
+                    if (data == "True") {
+                        alert("Thành công!");
+                        location.reload();
+                    }
+                    else
+                        alert("Lỗi!");
+                },
+                error: function () {
+                    alert("Sent request error!");
+                }
+            })
+        })
+    })  
+</script>
+<div class="right">
+    <h3 class="center-heading">Quản lý phân quyền</h3>
+    <div class="_list">
+        <h4 class="left-heading">Tổng số user: @list_user.Count</h4>
+        <table>
+            <tr>
+                <th>STT</th>
+                <th>Tên</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Quyền</th>
+            </tr>
+            @if (list_user_role != null)
+            {
+                if (list_user_role.Count > 0)
+                {
+                    int i = 1;
+                    foreach (var item in list_user_role)
+                    {
+                        var o = dal.GetUser((int)item.User_ID);
+                        <tr>
+                            <td>@(i++)</td>
+                            <td>@o.FullName</td>
+                            <td>@o.Username</td>
+                            <td>@o.Email</td>
+                            <td>
+                                <select name="role" id="@item.User_ID">
+                                    @foreach (var s in dal.ListRole())
+                                    {
+                                        <option value="@s.ID" @if (s.ID==item.Role_ID) {<text>selected</text>}>@s.Title</option>
+                                    }
+
+                                </select>
+                            </td>
+                        </tr>
+
+                    }
+                }
+            }
+        </table>
+        <ul class="paging">
+            <li class="active"><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+        </ul>
+    </div>
+</div>
+
+

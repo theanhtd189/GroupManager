@@ -1,0 +1,61 @@
+﻿@using GroupManager.Models;
+@using GroupManager.Functions;
+@{
+    ViewBag.Title = "Quản Lý Group";
+    var list = (List<Group>)ViewBag.List;
+    Layout = "~/Views/Shared/_Header.cshtml";
+    var dal = new Group_Function();
+    var user_dal = new User_Function();
+
+}
+
+<div class="right">
+    <h3 class="center-heading">Quản lý group</h3>
+    <div class="_list">
+        <h4 class="left-heading">Tổng số: @dal.ListAll().Count</h4>
+        <table>
+            <tr>
+                <th>STT</th>
+                <th>Tên</th>
+                <th>Danh mục</th>
+                <th>Người tạo</th>
+                <th>Ngày tạo</th>
+                <th>Thành viên</th>
+                <th>Hành động</th>
+            </tr>
+            @if (list != null)
+            {
+                if (list.Count > 0)
+                {
+                    int i = 1;
+                    foreach (var item in list)
+                    {
+                        <tr>
+                            <td>@(i++)</td>
+                            <td>@item.Title</td>
+                            <td>@dal.GetCategory((int)item.Category_ID).Title</td>
+                            <td>@user_dal.GetUser((int)item.Created_By).FullName</td>
+                            <td>@item.Created_Date.Value.ToString("dd/MM/yyyy")</td>
+                            <td>@dal.CountMember(item.ID)</td>
+                            <td>
+                                <a href="@Url.Action("GroupDetail", "Home", new { id = item.ID })">Chi tiết</a>
+                                | <a href="@Url.Action("Edit", "Group", new { gid = item.ID,return_url = Url.Action("GroupManager","Admin") })">Sửa</a>
+                                | <a href="@Url.Action("Delete","Group",new { id=item.ID, return_url=Url.Action("GroupManager","Admin")})" onclick="return confirm('Bạn có xác nhận muốn xóa?')">Xóa</a>
+                            </td>
+                        </tr>
+
+                    }
+                }
+            }
+        </table>
+        <div class="btn-create-left">
+            <li class="btn"><a href="@Url.Action("Create","Group")"><i class="fas fa-plus-square"></i> Tạo mới</a></li>
+        </div>
+        <ul class="paging">
+            <li class="active"><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+        </ul>
+    </div>
+</div>
+
+

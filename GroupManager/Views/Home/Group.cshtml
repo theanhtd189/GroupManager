@@ -1,0 +1,99 @@
+﻿@using GroupManager.Models
+@using GroupManager.Functions
+@{
+    Layout = "~/Views/Shared/_Header.cshtml";
+    var dal_user = new User_Function();
+    var gri = (List<Group>)ViewBag.ListGroup;
+    var gro = (List<Group>)ViewBag.ListGroupNot;
+}
+
+
+    <div class="right">
+        <h3 class="heading">Danh sách</h3>
+        <div class="group_list">
+            <div class="search">
+                <form action="" method="get">
+                    <input type="text" placeholder="Tên nhóm" name="s" required>
+                    <button type="submit">Tìm kiếm</button>
+                </form>
+            </div>
+            <div class="menu">
+                <ul>
+                    <li><a href="@Url.Action("Create","Group")">Tạo nhóm mới</a></li>
+                </ul>
+                @*<select name="" id="">
+                    <option value="0" selected>Danh mục</option>
+                    <option value="1">Danh mục abcsder</option>
+                </select>*@
+            </div>
+            <h4 class="left-heading">Các nhóm đã tham gia</h4>
+            <div class="list">
+                @if (gri != null)
+                {
+                    if (gri.Count > 0)
+                    {
+                        foreach (var item in gri)
+                        {
+                            <div class="items">
+                                <div class="info">
+                                    <span>TÊN NHÓM: <strong>@item.Title</strong></span>
+                                    <span>Ngày tạo: <strong>@item.Created_Date.Value.ToString("dd/MM/yyyy")</strong></span>
+                                    <span>Người tạo: <a href="#">@dal_user.GetUser((int)item.Created_By).FullName</a></span>
+                                    @if ((int)Session["user_id"] == item.Created_By)
+                                    {
+                                        <span>Chức vụ:  <strong>ADMIN</strong></span>
+                                    }
+                                    else
+                                    {
+                                        <span>Chức vụ:  <strong>Thành viên</strong></span>
+                                    }
+                                </div>
+                                <div class="_options">
+                                    <button class="btn"><a href="@Url.Action("GroupDetail","Home")/@item.ID">Truy cập</a></button>
+                                    @if (item.Created_By == (int)Session["user_id"])
+                                    {
+                                        <button class="btn"><a href="@Url.Action("GroupDetail","Home",new { id=item.ID, act="del" })" onclick="return confirm('Bạn có xác nhận muốn xóa?')">Xóa nhóm</a></button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn"><a href="@Url.Action("GroupDetail","Home",new { id=item.ID, act="out" })" onclick="return confirm('Bạn có xác nhận muốn rời nhóm?')">Rời nhóm</a></button>
+
+                                    }
+
+                                </div>
+                            </div>
+                        }
+                    }
+                }            
+
+            </div>
+            <h4 class="left-heading">Các nhóm chưa tham gia</h4>
+            <div class="list">
+                @if (gro != null)
+                {
+                    if (gro.Count > 0)
+                    {
+                        foreach (var item in gro)
+                        {
+                            <div class="items">
+                                <div class="info">
+                                    <span>TÊN NHÓM: <strong>@item.Title</strong></span>
+                                    <span>Ngày tạo: <strong>@item.Created_Date.Value.ToString("dd/MM/yyyy")</strong></span>
+                                    <span>Người tạo: <a href="#">@dal_user.GetUser((int)item.Created_By).FullName</a> </span>
+                                </div>
+                                <div class="_options">
+                                    <div class="_options">
+                                        <button class="btn"><a href="@Url.Action("TakeInGroup","Home",new { gid=item.ID })" onclick="return confirm('Bạn có xác nhận muốn tham gia nhóm này?')">Tham gia</a></button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="sgl_p">⭕ Chưa có nhóm nào</p>
+                    }
+                }
+            </div>
+        </div>
+    </div>

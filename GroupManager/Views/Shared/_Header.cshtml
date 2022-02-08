@@ -1,0 +1,92 @@
+﻿@using GroupManager.Functions;
+@using GroupManager.Models;
+@{ 
+    if(Session["user_id"]==null || Session["login"] == null)
+            {
+                Response.Redirect(Url.Action("Index","Login"));
+            }
+}
+@{
+    Layout = null;
+    var CurrentUser = new User_Function().GetUser((int)Session["user_id"]);
+    var type_user = new User_Function().GetRole((int)Session["user_id"]);
+    string actionName = ViewContext.RouteData.Values["action"].ToString();
+    string Title = "Group Manager";
+    if (ViewBag.Title != null)
+    {
+        Title = ViewBag.Title;
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="~/Content/style.css" rel="stylesheet" />
+    <title>@Title</title>
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/ckeditor/ckeditor.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo" style="background-image: url('../../Resourses/Images/logo.jpg');">
+        </div>
+        <div class="flex">
+            <div class="options">
+                @*<button class="btn addnew"><a href="#">Add new</a></button>*@
+            </div>
+            <div class="user">
+                <div class="avt" style="background-image: url('../../Resourses/Images/avt.png');">
+                    <div class="tooltip">
+                        <a href="@Url.Action("Logout","Profile")">Đăng Xuất</a>
+                    </div>
+                </div>
+                <a class="username" href="@Url.Action("","Profile")">@CurrentUser.FullName</a>
+            </div>
+        </div>
+    </header>
+    <main>
+        @if (ViewBag.HideLeft == null) {
+        <div class="left">
+            <ul class="list_items">
+                @if (type_user == "User")
+                {
+                    
+                    <li class="sgl_item @if (actionName.ToLower() == "index") {<text>active</text>} "><a href="@Url.Action("","Home")">HOME</a></li>
+                    <li class="sgl_item @if (actionName.ToLower().Contains("group")){<text>active</text>}"><a href="@Url.Action("Group","Home")">GROUP</a></li>
+                }
+                else
+                if (type_user == "Admin")
+                {
+                    <li class="sgl_item @if (actionName.ToLower() == "index") {<text>active</text>}"><a href="@Url.Action("Index","Admin")"><i class="fas fa-chess-king"></i> Tổng quan</a></li>
+                    <li class="sgl_item @if (actionName.ToLower() == "GroupManager".ToLower()) {<text>active</text>}"><a href="@Url.Action("GroupManager","Admin")"><i class="fas fa-tools"></i> Quản lý GROUP</a></li>
+                    <li class="sgl_item @if (actionName.ToLower() == "UserManager".ToLower()) {<text>active</text>}"><a href="@Url.Action("UserManager","Admin")"><i class="fas fa-tools"></i> Quản lý User</a></li>
+                    <li class="sgl_item @if (actionName.ToLower() == "PostManager".ToLower()) {<text>active</text>}"><a href="@Url.Action("PostManager","Admin")"><i class="fas fa-tools"></i> Quản lý Bài viết</a></li>
+                    <li class="sgl_item @if (actionName.ToLower() == "LessonManager".ToLower()) {<text>active</text>}"><a href="@Url.Action("LessonManager","Admin")"><i class="fas fa-tools"></i> Quản lý Bài giảng</a></li>
+                    <li class="sgl_item @if (actionName.ToLower() == "QuestionManager".ToLower()) {<text>active</text>}"><a href="@Url.Action("QuestionManager","Admin")"><i class="fas fa-tools"></i> Quản lý Câu hỏi</a></li>
+                    <li class="sgl_item @if (actionName.ToLower() == "RoleManager".ToLower()) {<text>active</text>}"><a href="@Url.Action("RoleManager","Admin")"><i class="fas fa-tools"></i> Quản lý Phân quyền</a></li>
+                }
+
+            </ul>
+        </div>
+        }      
+        @RenderBody()
+
+
+        @if (ViewBag.Msg != null)
+        {
+            if (!string.IsNullOrEmpty(ViewBag.Msg))
+            {
+                <script>alert(`@System.Net.WebUtility.HtmlDecode(ViewBag.Msg)`)</script>
+            }
+        }
+        </main>
+
+        </body>
+</html>

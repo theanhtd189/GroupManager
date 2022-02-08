@@ -1,0 +1,71 @@
+﻿@using GroupManager.Models;
+@using GroupManager.Functions;
+@{
+    ViewBag.Title = "Tạo nhóm mới";
+    var list = (List<GroupCategory>)ViewBag.List;
+    Layout = "~/Views/Shared/_Header.cshtml";
+}
+<script>
+    $(document).ready(function () {
+
+    $("#submit").click(function (e) {
+             e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("CreateReq","Group")',
+            data: {
+                'title': $("#title").val(),
+                'cate': $("#cate option:selected").val(),
+                'desc': $("#desc").val()
+            },
+                success: function (data) {
+                    if (data >0 ) {
+                        alert("Thành công!");
+                        var link = "@Url.Action("GroupDetail","Home")/?id=" + data;
+                            window.location.href = link;
+                    } else {
+                        alert("Lỗi!")
+                    }
+                },
+                error: function () {
+                    alert("Sent request error !");
+                }
+            });
+
+
+
+    })
+
+    })
+</script>
+
+<div class="right">
+    <h3 class="heading">Tạo nhóm mới</h3>
+    <div class="group_">
+        <div class="child_flex-c" id="post_form">
+            <div>
+                <label for="">Tên nhóm</label>
+                <input type="text" placeholder="Tên nhóm" name="title" id="title">
+            </div>
+            <div>
+                <label for="">Chuyên mục nhóm</label>
+                <select name="cate" id="cate">
+                    @foreach (var item in list)
+                    {
+                        <option value="@item.ID">@item.Title</option>
+
+                    }
+                </select>
+            </div>
+            <div>
+                <label for="">Mô tả</label>
+                <input type="text" name="desc" id="desc">
+            </div>
+            <div class="_btn">
+                <button class="btn" id="submit">Tạo</button>
+                <button class="btn" ><a href="@Url.Action("Group","Home")">Hủy</a></button>
+            </div>
+        </div>
+    </div>
+</div>
+

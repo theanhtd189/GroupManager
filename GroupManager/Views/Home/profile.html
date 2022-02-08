@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="Description" content="Enter your description here"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./style.css">
+<title>Hello</title>
+</head>
+<body>
+<header>
+    <div class="logo" style="background-image: url(./logo.jpg);">
+    </div>
+    <div class="flex">
+        <div class="options">
+            <button class="btn addnew"><a href="#">Add new</a></button>
+        </div>
+        <div class="user">
+            <div class="avt" style="background-image: url(./avt.png);">
+                <div class="tooltip">
+                    <a href="#">Đăng Xuất</a>
+                </div>
+            </div>
+            <a class="username" href="#a">Thế Anh</a>
+        </div>
+    </div>
+    
+</header>
+<main>
+    <div class="left">
+        <ul class="list_items">
+            <li class="sgl_item"><a href="#">HOME</a></li>
+            <li class="sgl_item"><a href="#">GROUP</a></li>
+            <li class="sgl_item"><a href="#">BAC</a></li>
+        </ul>
+    </div>
+    <div class="right" style="background-color: #fefefed9;">
+        <h3 class="heading">Thông tin cá nhân</h3>
+        <div class="profile_">
+            <div class="flex_ycenter">
+                <div class="img_avt" style="background-image: url(./avt.png);"></div>
+                <label class="btn upfile"for="file_avt">Tải ảnh đại diện</label>
+                <input type="file" name="file_avt" id="file_avt">
+            </div>
+            <div class="info_">
+                <form action="" method="post" id="post_form" class="child_flex-c" onsubmit="return check()">
+                    <div>
+                        <label for="">Họ và tên</label>
+                        <input type="text" required id="fullname">
+                    </div>
+                    <div>
+                        <label for="">Email</label>
+                        <input type="email" required id="email">
+                    </div>
+                        
+                    <div>
+                        <label for="">Ngày sinh</label>
+                        <input type="date" value="2022-01-01" required id="ns">
+                    </div>  
+                    <div>
+                        <label for="">Giới tính</label>
+                        <div>
+                            <div class="i_radio">
+                                <label for="">Nữ</label>
+                            <input type="radio" name="gt" value="0">
+                            </div>
+                            <div class="i_radio">
+                                <label for="">Nam</label>
+                            <input type="radio" name="gt" value="1">
+                            </div>
+                        </div>              
+                    </div>  
+                    <div class="flowroot">
+                        <input type="checkbox" id="changepass">
+                        <label for="">Đổi mật khẩu</label>   
+                    </div>
+                    <div>
+                        <label for="">Mật khẩu mới</label>
+                        <input type="password" id="pass">
+                    </div>
+                    <div>
+                        <label for="">Nhập lại mật khẩu mới</label>
+                        <input type="password" id="pass2">
+                    </div>
+                    <div class="_btn">
+                        <button class="btn" type="submit">Xác nhận</button>
+                        <button class="btn" type="submit"><a href="#">Hủy</a></button>
+                    </div>
+                </form>
+            </div>
+            
+        </div>
+        
+    </div>
+</main>
+<footer>
+
+</footer>
+</body>
+</html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+
+<script>
+function check(){
+    var changepass = $("#changepass");
+    var p = $("#pass").val();
+    var p2 = $("#pass2").val();
+    var ten = $("#fullname").val();
+    var email = $("#email").val();
+    var date = $("#ns").val();
+    var gt = $("input[name='gt']:checked").val();
+    console.log(date)
+    if(changepass.prop("checked")==true){
+        if(p.length<=0 || p2.length<=0){
+            alert("Vui lòng nhập mật khẩu hợp lệ");
+            return false;
+        }
+        else
+        if(p!=p2){
+            alert("Mật khẩu không khớp");
+            return false;
+        }
+        else
+        {
+            return false;
+        }
+    }else
+    {
+        return false;
+    }
+}
+</script>

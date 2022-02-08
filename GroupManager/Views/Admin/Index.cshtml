@@ -1,0 +1,66 @@
+﻿@using GroupManager.Functions;
+@{
+    Layout = "~/Views/Shared/_Header.cshtml";
+}
+
+
+    <div class="right">
+        <h3 class="left-heading space">Thống kê</h3>
+        <div class="group_list">
+            <div class="user_list">
+                <!-- <h4 class="left-heading">Danh sách thành viên</h4> -->
+                <div class="list">
+                    <div class="items sgl_tab">
+                        <i class="fas fa-user-friends custom-icon"></i>
+                        <h3>Group</h3>
+                        <p>Số lượng: @(new Group_Function().ListAll().Count)</p>
+                        <div class="_options">
+                            <button class="btn"><a href="@Url.Action("GroupManager")">Trình quản lý</a></button>
+                        </div>
+                    </div>
+                    <div class="items sgl_tab">
+                        <i class="fas fa-user custom-icon"></i>
+                        <h3>User</h3>
+                        <p>Số lượng: @(new User_Function().ListAll().Count)</p>
+                        <div class="_options">
+                            <button class="btn"><a href="@Url.Action("UserManager")">Trình quản lý</a></button>
+                        </div>
+                    </div>
+                    @*<div class="items sgl_tab">
+                        <i class="fas fa-comments custom-icon"></i>
+                        <h3>Comment</h3>
+                        <p>Số lượng: 1234</p>
+                        <div class="_options">
+                            <button class="btn"><a href="@Url.Action("CommentManager")">Trình quản lý</a></button>
+                        </div>
+                    </div>*@
+                    <div class="items sgl_tab">
+                        <i class="fas fa-scroll custom-icon"></i>
+                        <h3>Post</h3>
+                        <p>Số lượng: @(new Post_Function().ListAll().Count)</p>
+                        <div class="_options">
+                            <button class="btn"><a href="@Url.Action("PostManager")">Trình quản lý</a></button>
+                        </div>
+                    </div>
+                    <div class="items sgl_tab">
+                        <i class="fas fa-question-circle custom-icon"></i>
+                        <h3>Question</h3>
+                        <p>Số lượng: @(new Question_Function().ListAll().Count)</p>
+                        <div class="_options">
+                            <button class="btn"><a href="@Url.Action("QuestionManager")">Trình quản lý</a></button>
+                        </div>
+                    </div>
+                    <div class="items sgl_tab">
+                        <i class="fas fa-file-alt custom-icon"></i>
+                        <h3>Bài giảng</h3>
+                        <p>Số lượng: @(new Lesson_Function().ListAll().Count)</p>
+                        <div class="_options">
+                            <button class="btn"><a href="@Url.Action("LessonManager")">Trình quản lý</a></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+

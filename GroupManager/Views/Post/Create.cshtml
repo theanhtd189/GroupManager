@@ -1,0 +1,96 @@
+﻿@using GroupManager.Models;
+@using GroupManager.Functions;
+@{
+    ViewBag.Title = "Tạo bài viết mới";
+    var list = (List<PostCategory>)ViewBag.List;
+    var gid = (int)ViewBag.GID;
+    var g_dal = new Group_Function();
+    var list_group = g_dal.ListAll();
+    Layout = "~/Views/Shared/_Header.cshtml";
+}
+<script>
+    $(document).ready(function () {
+        $("#submit").click(function (e) {
+            e.preventDefault();
+            var cont = CKEDITOR.instances['txt_content'].getData()
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("CreateReq","Post")',
+                data: {
+                    'gid': @if (gid != -1) { <text>'@gid'</text>} else {<text>$("#gid option:selected").val()</text>},
+                    'title': $("#title").val(),
+                    'cate': $("#cate option:selected").val(),
+                    'content': cont
+                },
+                success: function (data) {
+                        if (data > 0) {
+                            alert("Thành công!");
+                            var link = "@Url.Action("Post","Home")/?id=" + data;
+                            window.location.href = link;
+                        } else {
+                            alert("Lỗi!")
+                        }
+                    },
+                error: function (xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    alert(err.Message);
+                }
+                });
+        })
+        CKEDITOR.replace("txt_content");
+    })
+</script>
+
+<div class="right">
+    <h3 class="heading">Bài viết</h3>
+    <div class="group_">
+        <div class="child_flex-c" id="post_form">
+            @if (gid == -1)
+            {
+            <div>
+                <label for="">Đăng vào nhóm</label>
+                <select name="gid" id="gid">
+                    @foreach (var item in list_group)
+                    {
+                        <option value="@item.ID">@item.Title</option>
+
+                    }
+                </select>
+            </div>
+            }
+            else
+            {
+                <div>
+                    <h2>Nhóm: @g_dal.Get(gid).Title</h2>
+                </div>
+            }
+            <div>
+                <label for="">Tiêu đề</label>
+                <input type="text" name="title" id="title" required>
+            </div>
+            <div>
+                <label for="">Chuyên mục</label>
+                <select name="cate" id="cate">
+                    @foreach (var item in list)
+                    {
+                        <option value="@item.ID">@item.Title</option>
+
+                    }
+                </select>
+            </div>
+            <div>
+                <label for="">Mô tả</label>
+                <input type="text" name="desc" id="desc" required>
+            </div>
+            <div>
+                <label for="">Nội dung</label>
+                <textarea name="txt_content" id="txt_content" required></textarea>
+            </div>
+            <div class="_btn">
+                <button class="btn" id="submit">Tạo</button>
+                <button class="btn"><a href="@Url.Action("GroupDetail","Home", new { id=gid})">Hủy</a></button>
+            </div>
+        </div>
+    </div>
+</div>
+

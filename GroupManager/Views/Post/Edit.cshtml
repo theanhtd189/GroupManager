@@ -1,0 +1,83 @@
+﻿@using GroupManager.Models;
+@using GroupManager.Functions;
+@{
+    Post g = (Post)ViewBag.Object;
+    var list = (List<PostCategory>)ViewBag.list;
+    string url = Url.Action("GroupDetail", "Home", new { id = g.Group_ID });
+    if (ViewBag.return_url != "no")
+    {
+        url = ViewBag.return_url.ToString();
+    }
+    Layout = "~/Views/Shared/_Header.cshtml";
+    ViewBag.Title = "Sửa bài viết";
+}
+
+<script>
+    $(document).ready(function () {
+        CKEDITOR.replace("content");
+        var default_val = `@Html.Raw(g.Content)`;
+        $("#content").val(default_val);
+        $("#submit").click(function (e) {
+            e.preventDefault();
+            var data_send = $('#post_form').serialize() + "&xcontent=" + CKEDITOR.instances['content'].getData();
+                $.ajax({
+                type: "POST",
+                url: '@Url.Action("EditPost","Post")',
+                    data: data_send,
+                success: function (data) {
+                    if (data == "True") {
+                        alert("Thành công!");
+                        var link = "@url";
+                        window.location.href = link;
+                    } else {
+                        alert("Lỗi!")
+                    }
+                },
+                error: function () {
+                    alert("Sent request error !");
+                }
+            });
+        })
+    })
+</script>
+<div class="right">
+    <h3 class="left-heading">Chỉnh sửa</h3>
+    <div class="group_">
+        <form action="" class="child_flex-c" id="post_form" method="post">
+            @if (ViewBag.return_url != null)
+            {
+                <input name="return_url" type="hidden" value="@url" id="return_url" />
+            }
+            <input type="hidden" id="id" name="id" value="@g.ID" />
+            <div>
+                <label for="">Tên bài</label>
+                <input type="text" value="@g.Title" name="title">
+            </div>
+            <div>
+                <label for="">Danh mục</label>
+                <select name="cate" id="cate">
+                    @foreach (var item in list)
+                    {
+
+                        <option value="@item.ID" @{ if (item.ID == g.Category_ID) { <text> selected</text>}
+                            }>
+                            @item.Title
+                        </option>
+
+                    }
+                </select>
+            </div>
+            <div>
+                <label for="">Nội dung</label>
+                <textarea id="content" name="content"></textarea>
+            </div>
+            <div class="_btn">
+                <button class="btn" id="submit">Cập nhật</button>
+                <button class="btn"><a href="@Url.Action("Group","Home")">Hủy</a></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+

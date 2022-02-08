@@ -1,0 +1,49 @@
+﻿@using GroupManager.Models;
+@using GroupManager.Functions;
+@{
+    ViewBag.Title = "Quản lý người dùng";
+    var list = (List<User>)ViewBag.List;
+    Layout = "~/Views/Shared/_Header.cshtml";
+    var dal = new User_Function();
+}
+<div class="right">
+    <h3 class="center-heading">Quản lý người dùng</h3>
+    <div class="_list">
+        <h4 class="left-heading">Tổng số: @list.Count</h4>
+        <table>
+            <tr>
+                <th>STT</th>
+                <th>Tên</th>
+                <th>Email</th>
+                <th>Ngày sinh</th>
+                <th>Quyền</th>
+                <th>Hành động</th>
+            </tr>
+            @if (list != null)
+            {
+                int i = 1;
+                foreach (var item in list)
+                {
+                    <tr>
+                        <td>@(i++)</td>
+                        <td>@item.FullName</td>
+                        <td>@item.Email</td>
+                        <td>@item.Date.Value.ToString("dd/MM/yyyy")</td>
+                        <td>@dal.GetRole(item.ID)</td>
+                        <td><a href="#" id="">Chi tiết</a> | <a href="#">Sửa</a> | <a href="#">Xóa</a></td>
+                    </tr>
+
+                }
+            }
+        </table>
+        <div class="btn-create-left">
+            <li class="btn"><a href="#"><i class="fas fa-plus-square"></i> Tạo mới</a></li>
+        </div>
+        <ul class="paging">
+            <li class="active"><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+        </ul>
+    </div>
+</div>
+
+

@@ -1,0 +1,116 @@
+﻿@using GroupManager.Models
+@using GroupManager.Functions
+@{
+    Layout = "~/Views/Shared/_Header.cshtml";
+    var li = (List<User>)ViewBag.ListIn;
+    var lo = (List<User>)ViewBag.ListNotIn;
+    var gid = (int)ViewBag.ID;
+    var dal_user = new User_Function();
+    var dal_gr = new Group_Function();
+}
+
+<script>
+    $(document).ready(function () {
+        $("#submit").click(function (e) {
+            e.preventDefault();
+            var uid = $("#member option:selected").val();
+            var url_ = '@Url.Action("AddMember","Group")';
+            $.ajax({
+                type: "POST",
+                url: url_,
+                data: {
+                    'gid': '@gid',
+                    'uid': uid
+                    },
+                success: function (data) {
+                    if (data == "True") {
+                        alert("Added member successfully!");
+                        location.reload();
+                    } else
+                        alert('Error!');
+                },
+                error: function () {
+                    alert("Sent requset error!");
+                }
+            })
+        })
+    });
+</script>
+<div class="right">
+    <h3 class="heading">tên nhóm</h3>
+    <div class="group_list">
+        <div class="menu view_member">
+            @if (dal_user.IsAdminGroup((int)Session["user_id"], gid))
+            {
+            <form action="">
+                @if (lo != null)
+                {
+                    if (lo.Count > 0)
+                    {
+                        <select name="member" id="member">
+
+                            @foreach (var item in lo)
+                            {
+                                <option value="@item.ID">@item.FullName</option>
+                            }
+
+                        </select>
+                        <button class="btn" id="submit">Thêm thành viên</button>
+                    }else
+                    {
+                            <select name="member" id="member">
+                                <option value="0">Không có thành viên nào</option>
+                            </select>
+                            <button class="btn" id="submit" disabled>Thêm thành viên</button>
+                    }
+                 }
+
+                    </form>
+
+            }
+            <ul>
+                <a href="@Url.Action("GroupDetail","Home", new { id=ViewBag.ID })" class="btn">Quay lại</a>
+            </ul>
+
+        </div>
+    </div>
+    <div class="user_list">
+        <h4 class="left-heading">Danh sách thành viên</h4>
+        <div class="list">
+
+            @if (li != null)
+            {
+                if (li.Count > 0)
+                {
+                    foreach (var item in li)
+                    {
+
+
+            <div class="items sgl_user">
+                        <p>@item.FullName</p>
+                        @if (dal_gr.IsAdminGroup(item.ID, gid))
+                        {
+                            <p>Tham gia <strong>@dal_gr.Get(gid).Created_Date.Value.ToString("dd/MM/yyyy")</strong></p>
+                        }
+                        <div class="_options">
+                        @if (dal_gr.IsAdminGroup(item.ID, gid))
+                        {
+                            <button class="btn"><a href="#">Quản trị viên</a></button>
+                        }
+                        else
+                        {
+                            <button class="btn"><a href="#" onclick="return confirm('Bạn có xác nhận muốn chặn thành viên này?')">Chặn</a></button>
+                            <button class="btn"><a href="@Url.Action("DeleteMember","Group",new { gid = gid, uid = item.ID, return_url = HttpContext.Current.Request.Url.AbsoluteUri })" onclick="return confirm('Bạn có xác nhận muốn xóa thành viên này?')">Xóa Khỏi nhóm</a></button>
+
+                        }
+                    </div>
+                </div>
+                    }
+
+                }
+            }
+
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,151 @@
+﻿@using GroupManager.Functions
+@using GroupManager.Models
+@{
+    var post = (Lesson)ViewBag.Item;
+    var dal_user = new User_Function();
+    var dal_post = new Lesson_Function();
+    var listcmt = (List<LessonComment>)ViewBag.ListCmt;
+    int uid = (int)Session["user_id"];
+    Layout = "~/Views/Shared/_Header.cshtml";
+}
+
+<script>
+    $(document).ready(function () {
+        var c = 0;
+        var create = $('<textarea></textarea>');
+        create.attr({
+            'class': '_cmt',
+            'id': 'txt_content_editable',
+        });
+        $('#cancel').hide();
+        $('#submit').hide();
+
+        $('#cancel').click(function (){
+            $('#cke_txt_content_editable').hide();
+            $('#submit').hide();
+            $('#cancel').hide();
+            $('#delete').show();
+            $('#edit').show();
+        });
+
+        $('#edit').click(function () {
+            $('#edit').hide();
+            $('#cancel').show();
+            $('#delete').hide();
+            $('#submit').show();
+            if (c == 0) {
+                create.appendTo('#single_post');
+                var default_val = `@Html.Raw(post.Content)`;
+                create.val(default_val);
+                CKEDITOR.replace("txt_content_editable");
+                c++;
+            } else {
+                $('#cke_txt_content_editable').show();
+            }
+        });
+
+        $("#submit").click(function (e) {
+            var cont = CKEDITOR.instances['txt_content_editable'].getData();
+             e.preventDefault();
+                $.ajax({
+                type: "POST",
+                url: '@Url.Action("EditLesson","Lesson")',
+                data: { 'pid': '@post.ID', 'content': cont},
+                success: function (data) {
+                    if (data == "True") {
+                        alert("Sửa bài viết thành công!");
+                        location.reload();
+                    } else {
+                        alert("Lỗi!")
+                    }
+                },
+                error: function () {
+                    alert("Sent request error !");
+                }
+            });
+        })
+
+        $("#submit_cmt").click(function (e) {
+            var cont = $("#comment_content").val();
+            e.preventDefault();
+            console.log(cont);
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AddCmt", "Lesson")',
+                data: { 'pid': '@post.ID', 'content': cont, 'uid': '@uid'},
+                success: function (data) {
+                    if (data == "True") {
+                        alert("Thành công!");
+                        location.reload();
+                    }
+                    else
+                    {
+                        alert("Lỗi!")
+                    }
+                },
+                error: function () {
+                    alert("Sent request error !");
+                }
+            });
+        })
+    })
+</script>
+
+<div class="right">
+    <h3 class="left-heading">@post.Title</h3>
+    <div class="post_list">
+        <h4 class="left-heading">
+            <p>
+                Đăng bởi <span>@dal_user.GetUser((int)post.Created_By).FullName</span> vào lúc @post.Created_Date.Value.ToString("dd/MM/yyyy")
+            </p>
+        </h4>
+        <div class="list" id="single_post">
+            <div class="items sgl_post">
+                <span class="_content" id="txt_content">
+                    @Html.Raw(Server.HtmlDecode(post.Content))
+                    @if ((int)Session["user_id"] == (int)post.Created_By)
+                    {
+                        <p class="owner_options">
+                            <span class="sbm" id="submit"><i class="fas fa-clipboard-check"></i><a href="#">Xác nhận</a> </span>
+                            <span id="edit"><i class="fas fa-edit"></i><a href="#">Sửa</a> </span>
+                            <span id="cancel"><i class="fas fa-edit"></i><a href="#">Hủy</a></span>
+                            <span id="delete"><i class="fas fa-trash-alt"></i><a href="@Url.Action("DeleteLesson", "Lesson", new { id = post.ID, gid=post.Group_ID })" onclick="return confirm('Bạn có xác nhận muốn xóa?')">Xóa</a></span>
+                        </p>
+                    }
+            </div>
+        </div>
+        <div class="list cmt_section">
+            <form action="" class="_cmt">
+                <textarea name="comment" id="comment_content" cols="30" rows="5" required></textarea>
+                <button type="submit" class="btn" id="submit_cmt">Bình luận</button>
+            </form>
+            <div class="list_comment">
+                @if (listcmt != null)
+                {
+                    if (listcmt.Count > 0)
+                    {
+                        foreach (var item in listcmt)
+                        {
+                            <div class="sgl_cmt">
+                                <p><strong>@dal_user.GetUser((int)item.Created_By).FullName</strong> vào lúc <strong>@item.Created_Date.Value.ToString("dd/MM/yyyy")</strong></p>
+                                <p>@item.Content</p>
+                                @if ((int)Session["user_id"] == (int)item.Created_By)
+                                {
+                                    @*<span><a href="#"> Sửa </a></span>*@
+                                    <span><a href="@Url.Action("DeleteComment","Lesson", new { pid=item.Lesson_ID, cmt_id = item.ID, return_url=HttpContext.Current.Request.Url.AbsoluteUri })" onclick="return confirm('Bạn có xác nhận muốn xóa?')"> Xóa </a></span>
+                                }
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="sgl_p">⭕ Chưa có bình luận nào</p>
+                    }
+                }
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
